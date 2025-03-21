@@ -1,0 +1,22 @@
+# Ignore Python virtual environment, shared folder, and __pycache__
+server/venv/
+server/shared/
+server/shared/*
+server/__pycache__/
+
+# Ignore Node.js dependencies and build files for React
+client/node_modules/
+client/.next/
+client/.parcel-cache/
+client/build/
+client/dist/
+
+# Ignore environment files
+**/.env
+**/.env.local
+**/.env.production
+**/.env.development
+
+# Ignore system files
+.DS_Store
+Thumbs.db
