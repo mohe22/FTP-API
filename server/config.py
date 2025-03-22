@@ -1,12 +1,9 @@
 from dotenv import load_dotenv
 import os
 
-# Load environment variables from .env file
 load_dotenv()
 
 class Config:
-    # General settings
-
     SHARED_FOLDER = os.getenv("SHARED_FOLDER")
 
     FRONTEND_URL = os.getenv("FRONTEND_URL")
