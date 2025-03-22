@@ -10,7 +10,6 @@ from routes import auth
 from routes import files
 
 app = FastAPI()
-
 app.add_middleware(
     CORSMiddleware,
     allow_origins=Config.FRONTEND_URL,  

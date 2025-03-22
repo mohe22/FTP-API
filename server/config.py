@@ -2,7 +2,6 @@ from dotenv import load_dotenv
 import os
 
 load_dotenv()
-
 class Config:
     SHARED_FOLDER = os.getenv("SHARED_FOLDER")
 

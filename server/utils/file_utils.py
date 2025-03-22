@@ -125,22 +125,17 @@ def get_file_details(file_path: str):
 
 def list_files(directory):
     try:
-        if directory.startswith("/"):
-            directory = directory[1:]
         if not os.path.exists(directory):
             return f"Error: Directory '{directory}' does not exist."
         
         files = os.listdir(directory)
         file_list = []
-
+        
         for file in files:
             file_path = os.path.join(directory, file)
             file_stat = os.stat(file_path)
 
-            nlinks = file_stat.st_nlink
-            owner = file_stat.st_uid
-            group = file_stat.st_gid
-
+        
             if os.path.isdir(file_path):
                 size = format_size(get_directory_size(file_path))
                 is_folder = True
@@ -151,7 +146,7 @@ def list_files(directory):
             mtime = format_time(file_stat.st_mtime)
 
             # Include is_folder in the file_info string
-            file_info = f"{nlinks}\t{owner}\t{group}\t{size}\t{mtime}\t{file}\t{is_folder}"
+            file_info = f"{size}\t{mtime}\t{file}\t{is_folder}"
             file_list.append(file_info)
 
         file_list_str = "\r\n".join(file_list) + "\r\n"
@@ -234,9 +229,11 @@ def delete_recursive(path):
 
 
 def validate_and_join_path(directory = Config.SHARED_FOLDER, root_dir=Config.SHARED_FOLDER) :
+    
     directory = directory if directory else Config.SHARED_FOLDER 
-
-      # Normalize the path (remove redundant separators, resolve relative paths)
+    if directory == Config.SHARED_FOLDER:
+        return directory
+    # Normalize the path (remove redundant separators, resolve relative paths)
     normalized_directory = os.path.normpath(directory).replace("\\", "/")
     if normalized_directory.startswith("/"):
         normalized_directory = normalized_directory[1:]
@@ -250,5 +247,5 @@ def validate_and_join_path(directory = Config.SHARED_FOLDER, root_dir=Config.SHA
     
     if not abs_path.startswith(abs_root):
         return False
-
+    print(abs_path)
     return abs_path

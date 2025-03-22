@@ -250,7 +250,6 @@ async def list_directory(
         action="Read",
     )
 
-
  
   
     if allowed is False or allowed is None:
@@ -266,14 +265,14 @@ async def list_directory(
         clean = file.replace("\r", "")
         if clean:
             file_info = clean.split("\t")
-            if len(file_info) >= 7:  
-                file_name = file_info[5] 
+            if len(file_info) >= 3:  
+                file_name = file_info[2] 
                 if not file_name.endswith(".part"):
                     file_details = {
-                        "time": file_info[4],  
+                        "time": file_info[1],  
                         "name": file_name,    
-                        "size": file_info[3],  
-                        "is_folder": file_info[6].lower() == "true", 
+                        "size": file_info[0],  
+                        "is_folder": file_info[3], 
                     }
                     clean_files.append(file_details)
     return {"message": clean_files}
@@ -450,7 +449,6 @@ async def create_director(
     if not file_path:
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Invalid path")
     parent_folder_path = os.path.dirname(file_path)
-
     allowed = can_access_file(
         file_path=parent_folder_path,
         user_id=current_user.get("user_id"),

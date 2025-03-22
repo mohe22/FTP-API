@@ -34,7 +34,7 @@ def can_access_file(file_path: str, user_id: int, action: str) -> bool:
         Parent Folder Permissions:If no permissions are found at the file level, the function checks the permissions of the parent folder. If the user inherits the required permission from the parent folder, access is granted.
         Permission Hierarchy:Permissions are evaluated in a hierarchical manner (e.g., Full Control includes all permissions, Modify includes Read, Write, etc.).    
     """
-  
+    
     if file_path == Config.SHARED_FOLDER and action == "Read":
         return True
     
