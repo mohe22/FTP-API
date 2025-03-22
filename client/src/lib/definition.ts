@@ -46,7 +46,6 @@ const isValidIPOrSubnet = (value: string): boolean => {
 
 export const SecuritySettingsSchema = z.object({
   twoFactorEnabled: z.boolean(),
-  passwordExpiry: z.number().min(1, "Password expiry must be at least 1 day"),
   loginAttempts: z.number().min(1, "Login attempts must be at least 1"),
   sessionTimeout: z.number().min(1, "Session timeout must be at least 1 minute"),
   ipRestriction: z.boolean().default(false),

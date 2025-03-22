@@ -14,9 +14,7 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
-import { useWebSocket } from "@/context/web-socket-provider";
 import { toast } from "sonner";
-import { useNavigate } from "react-router-dom";
 import axiosInstance from "@/lib/axios";
 
 const formSchema = z.object({
@@ -26,7 +24,6 @@ const formSchema = z.object({
 
 
 export default function Login() {
-  const nav = useNavigate();
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -43,10 +40,10 @@ export default function Login() {
     
     try {
       const res = await axiosInstance.post("/auth/login", values)
-      if (res.data.status_code==307 && res.data.detials.includes("otp")) {
-        toast.success("sending verification code"); 
+      if (res.data.status_code==307) {
+        window.location.href="/otp?username="+values.username
       }else{
-        nav("/")
+        window.location.href="/"
       }
     } catch (error:any ) {      
       if (axios.isAxiosError(error)) {

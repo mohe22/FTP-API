@@ -5,7 +5,7 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from utils.utils import add_default_data,initialize_database
 from routes.admin.main import router as admin_router
-
+from config import Config
 from routes import auth
 from routes import files
 
@@ -13,7 +13,7 @@ app = FastAPI()
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://192.168.0.72:5173","http://localhost:5173"],  
+    allow_origins=Config.FRONTEND_URL,  
     allow_credentials=True,  
     allow_methods=["*"],  
     allow_headers=["*"],  

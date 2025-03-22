@@ -1,4 +1,4 @@
-import { Bell, LogOut } from "lucide-react";
+import {  LogOut } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useUser } from "@/hooks/user";
 export default function Nav() {
@@ -30,17 +30,6 @@ export default function Nav() {
         </div>
     
         <div className="flex space-x-2">
-          <Button 
-            className="relative" 
-            variant="ghost" 
-            size="sm" 
-            asChild
-            >
-            <a href="/Notification">
-              <Bell className="h-5 w-5" />
-              <div className=" absolute text-sm -top-1 -right-1 flex items-center justify-center size-4.5 bg-red-400 rounded-full">12</div>
-            </a>
-          </Button>
           <Button 
             className="relative" 
             variant="ghost" 

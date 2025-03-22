@@ -21,7 +21,7 @@ const fetchUsers = async ({ pageParam = 0 }) => {
   return response.data;
 };
 
-export default function AddUserToGroup() {
+export default function AddUserToGroup({refetch}:{refetch:()=>void}) {
   const [selectedUsers, setSelectedUsers] = useState<number[]>([]);
   const { ref, inView } = useInView();
   const { id } =useParams()
@@ -35,6 +35,7 @@ export default function AddUserToGroup() {
         { user_ids: selectedUsers } 
 
       )
+      refetch()
       
       toast.info("user add to group")
       

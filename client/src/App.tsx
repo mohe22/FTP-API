@@ -11,6 +11,7 @@ import AdminGroups from "./pages/admin-groups";
 import AdminSingleUser from "./pages/admin-single-user";
 import AdminSingleGroup from "./pages/admin-single-group";
 import AdminActivity from "./pages/admin-activity";
+import OTP from "./pages/otp";
 
 function App() {
   return (
@@ -22,6 +23,12 @@ function App() {
           <ProtectedRoute>
             <Home />
           </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/otp"
+        element={
+          <OTP/>
         }
       />
       <Route

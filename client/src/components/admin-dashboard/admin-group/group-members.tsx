@@ -6,7 +6,6 @@ import {
   CardContent,
 } from "@/components/ui/card";
 import { useQuery } from "@tanstack/react-query";
-import axios from "axios";
 import BoxContainer from "@/components/box-container";
 
 import { Button } from "@/components/ui/button";
@@ -45,6 +44,7 @@ export default function GroupMembers({ groupId }: { groupId: string }) {
     data: members,
     isLoading,
     isError,
+    refetch
   } = useQuery<Member[]>({
     queryKey: ["get-group-details", groupId],
     queryFn: async () => {
@@ -96,7 +96,7 @@ export default function GroupMembers({ groupId }: { groupId: string }) {
                 "add members to group",
                 "select users to add to this group",
                 () => (
-                    <AddUserToGroup />
+                    <AddUserToGroup refetch={refetch}/>
                 
                 )
               );

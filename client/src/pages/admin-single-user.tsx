@@ -81,8 +81,7 @@ export default function AdminSingleUser() {
           
             data={{
               sessionTimeout: userData.session_time_out,
-              passwordExpiry: userData.password_expiry_date,
-              twoFactorEnabled: userData.Tow_factor_auth,
+              twoFactorEnabled: userData.Two_factor_auth,
               allowedIPs: userData.Allowed_ips,
               loginAttempts: userData.max_logged_in,
               ipRestriction:userData.ip_restriction

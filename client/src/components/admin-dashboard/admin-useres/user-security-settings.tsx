@@ -22,7 +22,6 @@ export function UserSecuritySettings({ userId, data }: UserSecuritySettingsProps
     resolver: zodResolver(SecuritySettingsSchema),
     defaultValues: {
       twoFactorEnabled: data.twoFactorEnabled || false,
-      passwordExpiry: data.passwordExpiry || 90,
       loginAttempts: data.loginAttempts || 5,
       sessionTimeout: data.sessionTimeout || 30,
       allowedIPs: data.allowedIPs || "",
@@ -30,6 +29,9 @@ export function UserSecuritySettings({ userId, data }: UserSecuritySettingsProps
     },
   });
 
+
+  console.log(data);
+  
   
   const [newPassword, setNewPassword] = React.useState({
     current: "",
@@ -105,25 +107,6 @@ export function UserSecuritySettings({ userId, data }: UserSecuritySettingsProps
               />
 
               <div className="grid gap-4 sm:grid-cols-2">
-                <FormField
-                  control={form.control}
-                  name="passwordExpiry"
-                  render={({ field }) => (
-                    <FormItem>
-                      <Label htmlFor="password-expiry">Password Expiry (days)</Label>
-                      <FormControl>
-                        <Input
-                          id="password-expiry"
-                          type="number"
-                          {...field}
-                          onChange={(e) => field.onChange(Number(e.target.value))}
-                        />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-
                 <FormField
                   control={form.control}
                   name="loginAttempts"
