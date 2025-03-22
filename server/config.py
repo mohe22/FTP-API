@@ -7,17 +7,13 @@ load_dotenv()
 class Config:
     # General settings
 
-    SHARED_FOLDER = r"C:\Users\mohe_2004\Documents\github\FTP-server+ap\server\shared"
+    SHARED_FOLDER = os.getenv("SHARED_FOLDER")
 
     FRONTEND_URL = os.getenv("FRONTEND_URL")
 
 
 
-    # JWT and encryption settings
-    PRIVATE_KEY_PATH = os.getenv("PRIVATE_KEY_PATH")
-    PUBLIC_KEY_PATH = os.getenv("PUBLIC_KEY_PATH")
-    ACCESS_TOKEN_EXPIRE_HOURS = int(os.getenv("ACCESS_TOKEN_EXPIRE_HOURS", 24))  # Default to 24 hours
-    ENCRYPTION_KEY = os.getenv("ENCRYPTION_KEY")
+
     SECRET_KEY = os.getenv("SECRET_KEY")
 
     # SMTP settings for email

@@ -1,8 +1,5 @@
 import sqlite3
 from fastapi import APIRouter, Depends, HTTPException, status, Request,Query
-from pydantic import BaseModel, EmailStr
-from typing import List, Optional
-import bcrypt
 from utils.utils import get_db_connection,add_activity
 from utils.jwt import get_current_user
 from .users import router as users_router
@@ -56,14 +53,13 @@ def get_dashboard_stats(
         )
         recent_activity = cursor.fetchall()
 
-        # Convert recent activity to a list of dictionaries
         recent_activity_list = [
             {
                 "activity_type": row["activity_type"],
                 "details": row["details"],
                 "activity_time": row["activity_time"],
                 "username": row["username"],
-                "avatar": row["avatar"],  # Include the avatar
+                "avatar": row["avatar"], 
             }
             for row in recent_activity
         ]

@@ -10,7 +10,6 @@ router = APIRouter(prefix="/users", tags=["admin-users"])
 class UpdateUserSecuritySettingsRequest(BaseModel):
     loginAttempts:int
     sessionTimeout:int
-    passwordExpiry:int
     twoFactorEnabled: bool 
     ipRestriction:bool
     allowedIPs: str
@@ -183,7 +182,6 @@ async def get_user_by_id(user_id: int, current_user: dict = Depends(get_current_
                 u.avatar,
                 u.max_logged_in,
                 u.session_time_out,
-                u.password_expiry_date,
                 u.Two_factor_auth,
                 u.Allowed_ips,
                 u.ip_restriction,
@@ -216,7 +214,6 @@ async def get_user_by_id(user_id: int, current_user: dict = Depends(get_current_
             "avatar": row["avatar"],
             "max_logged_in": row["max_logged_in"],
             "session_time_out": row["session_time_out"],
-            "password_expiry_date": row["password_expiry_date"],
             "Two_factor_auth": bool(row["Two_factor_auth"]),
             "Allowed_ips": row["Allowed_ips"],
             "ip_restriction": bool(row["ip_restriction"]),
@@ -597,7 +594,6 @@ async def update_security_settings(
             SET 
                 max_logged_in = ?, 
                 session_time_out = ?, 
-                password_expiry_date = ?, 
                 Two_factor_auth = ?, 
                 Allowed_ips = ?, 
                 ip_restriction = ? 
@@ -606,7 +602,6 @@ async def update_security_settings(
             (
                 user_data.loginAttempts,
                 user_data.sessionTimeout,
-                user_data.passwordExpiry,
                 user_data.twoFactorEnabled,
                 user_data.allowedIPs,
                 user_data.ipRestriction,

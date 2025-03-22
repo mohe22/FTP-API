@@ -39,7 +39,6 @@ def initialize_database():
             avatar VARCHAR(255),
             max_logged_in INTEGER DEFAULT 5,
             session_time_out INTEGER DEFAULT 30,
-            password_expiry_date INTEGER DEFAULT 90,
             Two_factor_auth BOOLEAN DEFAULT 0,
             ip_restriction BOOLEAN DEFAULT 0,
             Allowed_ips TEXT,

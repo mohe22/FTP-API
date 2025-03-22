@@ -1,4 +1,4 @@
-from fastapi import APIRouter,Cookie, HTTPException, status, Response, Request
+from fastapi import APIRouter, HTTPException, status, Response, Request
 from pydantic import BaseModel
 import bcrypt
 from datetime import datetime
@@ -126,6 +126,7 @@ def handle_two_factor_auth(user):
             "otp": otp,
             "expires_at": expiration_time,
             "user_id": user["id"],
+            "retry_count": 0
         }
         send_email(
             to_email=user["email"],
@@ -165,7 +166,6 @@ def update_user_activity(cursor, user_id):
 async def login(request: Request, user_data: LoginRequest, response: Response):
     username = user_data.username
     password = user_data.password
-    client_ip = request.client.host
 
     connection = get_db_connection()
     cursor = connection.cursor()
@@ -219,7 +219,7 @@ async def login(request: Request, user_data: LoginRequest, response: Response):
             value=jwt_token,
             max_age=user["session_time_out"] * 60,
             httponly=True,
-            secure=False,  # Disable Secure for HTTP
+            secure=False,  
             samesite="strict", 
             path="/",  
         )
@@ -232,7 +232,6 @@ async def login(request: Request, user_data: LoginRequest, response: Response):
     except HTTPException:
         raise
     except Exception as e:
-        print(e)
         connection.rollback()
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
@@ -242,23 +241,28 @@ async def login(request: Request, user_data: LoginRequest, response: Response):
         cursor.close()
         connection.close()
 
+
 @router.post("/verify-otp", status_code=status.HTTP_200_OK)
-def verify_otp(otp_data: VerifyOTP):
+async def verify_otp(request: Request, otp_data: VerifyOTP, response: Response):
     username = otp_data.username
     otp = otp_data.otp
+
     if username not in otp_store:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
             detail="OTP not found or expired"
         )
+
     stored_otp = otp_store[username]["otp"]
     expires_at = otp_store[username]["expires_at"]
+
     if time.time() > expires_at:
         del otp_store[username]
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
             detail="OTP expired"
         )
+
     if "retry_count" in otp_store[username] and otp_store[username]["retry_count"] >= MAX_RETRIES:
         del otp_store[username]
         raise HTTPException(
@@ -272,6 +276,78 @@ def verify_otp(otp_data: VerifyOTP):
             status_code=status.HTTP_400_BAD_REQUEST,
             detail=f"Invalid OTP. You have {MAX_RETRIES - otp_store[username]['retry_count']} attempts remaining."
         )
+
+    # Fetch user data after OTP verification
+    connection = get_db_connection()
+    cursor = connection.cursor()
+
+    try:
+        cursor.execute(
+            """
+            SELECT 
+                u.id, u.hash_password, u.username, u.is_admin, 
+                u.max_logged_in, u.session_time_out, u.Two_factor_auth, 
+                u.ip_restriction, u.Allowed_ips, u.is_blocked, u.email,
+                g.id AS group_id, g.group_name
+            FROM users u
+            LEFT JOIN user_groups ug ON u.id = ug.user_id
+            LEFT JOIN groups g ON ug.group_id = g.id
+            WHERE u.username = ?
+            """,
+            (username,)
+        )
+        rows = cursor.fetchall()
+
+        if not rows:
+            raise HTTPException(
+                status_code=status.HTTP_401_UNAUTHORIZED,
+                detail="Invalid credentials"
+            )
+
+        user = rows[0]
+        group_info = collect_group_info(rows)
+        user_data = generate_user_data(user, group_info)
+        jwt_token = generate_jwt(user_data, user["session_time_out"])
+        update_user_activity(cursor, user["id"])
+        add_activity(
+            cursor=cursor,
+            activity_type="Security",
+            details="User logged in via OTP",
+            category="Authentication",
+            request=request,
+            user_id=user["id"]
+        )
+        connection.commit()
+
+        # Set the JWT token in the response cookie
+        response.set_cookie(
+            key="token",
+            value=jwt_token,
+            max_age=user["session_time_out"] * 60,
+            httponly=True,
+            secure=False,  
+            samesite="strict", 
+            path="/",  
+        )
+
+        return {
+            "message": "OTP verification successful",
+            "token": jwt_token,
+            "user_data": user_data
+        }
+
+    except HTTPException:
+        raise
+    except Exception as e:
+        connection.rollback()
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f"Internal server error"
+        )
+    finally:
+        cursor.close()
+        connection.close()
+
 
 @router.get("/validate-token")
 async def validate_token(request: Request):
